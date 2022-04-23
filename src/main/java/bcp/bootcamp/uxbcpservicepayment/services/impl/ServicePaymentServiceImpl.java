@@ -1,5 +1,6 @@
 package bcp.bootcamp.uxbcpservicepayment.services.impl;
 
+import bcp.bootcamp.uxbcpservicepayment.core.exceptions.ServicePaymentBaseException;
 import bcp.bootcamp.uxbcpservicepayment.entities.ServicePayment;
 import bcp.bootcamp.uxbcpservicepayment.entities.ServicePaymentFavorite;
 import bcp.bootcamp.uxbcpservicepayment.entities.ServicePaymentHistory;
@@ -8,6 +9,7 @@ import bcp.bootcamp.uxbcpservicepayment.repositories.ServicePaymentRepository;
 import bcp.bootcamp.uxbcpservicepayment.services.ServicePaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,8 +25,8 @@ public class ServicePaymentServiceImpl implements ServicePaymentService {
     private ServicePaymentFavoriteRepository servicePaymentFavoriteRepository;
 
     @Override
-    public Flux<ServicePayment> servicePaymentFindAll(String channel, String token) {
-        return this.servicePaymentRepository.servicePaymentList(channel, token);
+    public Flux<ServicePayment> servicePaymentFindAll(Integer id, String channel, String token) {
+        return this.servicePaymentRepository.servicePaymentList(id, channel, token);
     }
 
     @Override

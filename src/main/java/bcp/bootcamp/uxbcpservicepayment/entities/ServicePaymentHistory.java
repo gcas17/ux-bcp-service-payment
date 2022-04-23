@@ -1,12 +1,12 @@
 package bcp.bootcamp.uxbcpservicepayment.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
@@ -23,4 +23,12 @@ public class ServicePaymentHistory {
     private String currency;
     @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime transactionDate;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String channel;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean addToFavorites;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String favoriteName;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String favoriteType;
 }

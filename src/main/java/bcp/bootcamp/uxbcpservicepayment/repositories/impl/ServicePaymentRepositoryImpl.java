@@ -48,7 +48,7 @@ public class ServicePaymentRepositoryImpl implements ServicePaymentRepository {
             .onStatus(HttpStatus::is5xxServerError, response-> Mono.error(new ServicePaymentBaseException("Server error")))
             .bodyToMono(ServicePaymentHistory.class)
             .retryWhen(
-                Retry.fixedDelay(3, Duration.ofSeconds(2))
+                Retry.fixedDelay(2, Duration.ofSeconds(2))
                     .doBeforeRetry(x->  log.info("LOG BEFORE RETRY=" + x))
                     .doAfterRetry(x->  log.info("LOG AFTER RETRY=" + x))
             )
@@ -65,7 +65,7 @@ public class ServicePaymentRepositoryImpl implements ServicePaymentRepository {
             .onStatus(HttpStatus::is5xxServerError, response -> Mono.error(new ServicePaymentBaseException("Server error")))
             .bodyToFlux(ServicePaymentHistory.class)
             .retryWhen(
-                Retry.fixedDelay(3, Duration.ofSeconds(2))
+                Retry.fixedDelay(2, Duration.ofSeconds(2))
                     .doBeforeRetry(x->  log.info("LOG BEFORE RETRY=" + x))
                     .doAfterRetry(x->  log.info("LOG AFTER RETRY=" + x))
             )
@@ -73,15 +73,24 @@ public class ServicePaymentRepositoryImpl implements ServicePaymentRepository {
     }
 
     @Override
-    public Flux<ServicePayment> servicePaymentList(String channel, String token) {
-        String queryParam = Optional.ofNullable(channel).map(s -> "?channel=" + s).orElse("");
-        return this.client.get().uri("/" + queryParam).accept(MediaType.APPLICATION_JSON)
+    public Flux<ServicePayment> servicePaymentList(Integer id, String channel, String token) {
+        return this.client.get().uri(uriBuilder -> {
+                    var ub = uriBuilder.path("/");
+                    if(id != null) {
+                        ub.queryParam("id", id);
+                    }
+                    if(channel != null) {
+                        ub.queryParam("channel", channel);
+                    }
+                    return ub.build();
+                }
+            ).accept(MediaType.APPLICATION_JSON)
             .header("Authorization", token)
             .retrieve()
             .onStatus(HttpStatus::is5xxServerError, response -> Mono.error(new ServicePaymentBaseException("Server error")))
             .bodyToFlux(ServicePayment.class)
             .retryWhen(
-                Retry.fixedDelay(3, Duration.ofSeconds(2))
+                Retry.fixedDelay(2, Duration.ofSeconds(2))
                     .doBeforeRetry(x->  log.info("LOG BEFORE RETRY=" + x))
                     .doAfterRetry(x->  log.info("LOG AFTER RETRY=" + x))
             )

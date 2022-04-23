@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 public interface ServicePaymentService {
 
-    Flux<ServicePayment> servicePaymentFindAll(String channel, String token);
+    Flux<ServicePayment> servicePaymentFindAll(Integer id, String channel, String token);
 
     Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId, String token);
 

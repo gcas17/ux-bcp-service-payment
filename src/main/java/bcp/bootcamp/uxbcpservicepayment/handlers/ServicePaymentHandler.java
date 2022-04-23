@@ -13,6 +13,8 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
+
 @Slf4j
 @Component
 public class ServicePaymentHandler {
@@ -22,8 +24,9 @@ public class ServicePaymentHandler {
 
     public Mono<ServerResponse> getServicePayments(ServerRequest request) {
         String token = request.headers().header("Authorization").get(0);
+        Integer id = request.queryParam("id").isPresent()? Integer.parseInt(request.queryParam("id").get()):null;
         String channel = request.queryParam("channel").isPresent()? request.queryParam("channel").get():null;
-        return this.servicePaymentService.servicePaymentFindAll(channel, token)
+        return this.servicePaymentService.servicePaymentFindAll(id, channel, token)
                 .collectList()
                 .flatMap(s -> ServerResponse.ok().body(Mono.just(s), ServicePayment.class));
     }
@@ -42,7 +45,31 @@ public class ServicePaymentHandler {
     public Mono<ServerResponse> saveServicePaymentHistory(ServerRequest request) {
         String token = request.headers().header("Authorization").get(0);
         return request.bodyToMono(ServicePaymentHistory.class)
-                .flatMap(servicePaymentHistory -> this.servicePaymentService.servicePaymentHistorySave(servicePaymentHistory, token))
+                .flatMap(servicePaymentHistory -> {
+                    return this.servicePaymentService.servicePaymentFindAll(servicePaymentHistory.getServicePaymentId(), servicePaymentHistory.getChannel(), token)
+                        .hasElements()
+                        .flatMap(exists -> {
+                            if(servicePaymentHistory.getAddToFavorites().equals(true) && (servicePaymentHistory.getFavoriteName() == null || servicePaymentHistory.getFavoriteType() == null)) {
+                                return  Mono.error(new ServicePaymentBaseException(HttpStatus.BAD_REQUEST, "Para agregar el servicio a favoritos es necesario enviar nombre y el tipo de favoritos."));
+                            }
+                            if(exists)  {
+                                return this.servicePaymentService.servicePaymentFavoriteSave(
+                                    new ServicePaymentFavorite(
+                                        null,
+                                        servicePaymentHistory.getClientId(),
+                                        servicePaymentHistory.getServicePaymentId(),
+                                        servicePaymentHistory.getFavoriteName(),
+                                        servicePaymentHistory.getFavoriteType(),
+                                        LocalDate.now()
+                                    ), token)
+                                    .hasElement()
+                                    .flatMap(existsFav -> existsFav? this.servicePaymentService.servicePaymentHistorySave(servicePaymentHistory, token) : Mono.empty());
+                            } else {
+                                return Mono.empty();
+                            }
+                        });
+                })
+                .switchIfEmpty(Mono.error(new ServicePaymentBaseException(HttpStatus.BAD_REQUEST, "El servicio de pago ingresado no acepta el tipo de canal seleccionado")))
                 .flatMap(servicePaymentHistory -> ServerResponse.ok().body(Mono.just(servicePaymentHistory), ServicePaymentHistory.class));
     }
 

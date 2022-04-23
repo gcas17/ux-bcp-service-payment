@@ -12,6 +12,6 @@ public interface ServicePaymentRepository {
 
     Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId, String token);
 
-    Flux<ServicePayment> servicePaymentList(String channel, String token);
+    Flux<ServicePayment> servicePaymentList(Integer id, String channel, String token);
 
 }
