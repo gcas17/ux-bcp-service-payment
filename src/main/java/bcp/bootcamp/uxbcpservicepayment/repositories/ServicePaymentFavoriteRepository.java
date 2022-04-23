@@ -6,10 +6,10 @@ import reactor.core.publisher.Mono;
 
 public interface ServicePaymentFavoriteRepository {
 
-    Mono<Void> servicePaymentFavoriteDelete(String id);
+    Mono<Void> servicePaymentFavoriteDelete(String id, String token);
 
-    Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite);
+    Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite, String token);
 
-    Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId);
+    Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId, String token);
 
 }

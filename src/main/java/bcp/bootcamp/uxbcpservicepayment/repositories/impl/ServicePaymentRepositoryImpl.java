@@ -40,8 +40,9 @@ public class ServicePaymentRepositoryImpl implements ServicePaymentRepository {
     }
 
     @Override
-    public Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory) {
+    public Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory, String token) {
         return this.client.post().uri("/").accept(MediaType.APPLICATION_JSON)
+            .header("Authorization", token)
             .body(BodyInserters.fromValue(servicePaymentHistory))
             .retrieve()
             .onStatus(HttpStatus::is5xxServerError, response-> Mono.error(new ServicePaymentBaseException("Server error")))
@@ -56,9 +57,10 @@ public class ServicePaymentRepositoryImpl implements ServicePaymentRepository {
     }
 
     @Override
-    public Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId) {
+    public Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId, String token) {
         String queryParam = Optional.ofNullable(clientId).map(id -> "?clientId=" + String.valueOf(id)).orElse("");
         return this.client.get().uri("/history"+queryParam).accept(MediaType.APPLICATION_JSON)
+            .header("Authorization", token)
             .retrieve()
             .onStatus(HttpStatus::is5xxServerError, response -> Mono.error(new ServicePaymentBaseException("Server error")))
             .bodyToFlux(ServicePaymentHistory.class)
@@ -71,9 +73,10 @@ public class ServicePaymentRepositoryImpl implements ServicePaymentRepository {
     }
 
     @Override
-    public Flux<ServicePayment> servicePaymentList(String channel) {
+    public Flux<ServicePayment> servicePaymentList(String channel, String token) {
         String queryParam = Optional.ofNullable(channel).map(s -> "?channel=" + s).orElse("");
         return this.client.get().uri("/" + queryParam).accept(MediaType.APPLICATION_JSON)
+            .header("Authorization", token)
             .retrieve()
             .onStatus(HttpStatus::is5xxServerError, response -> Mono.error(new ServicePaymentBaseException("Server error")))
             .bodyToFlux(ServicePayment.class)

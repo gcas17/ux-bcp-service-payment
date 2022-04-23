@@ -8,10 +8,10 @@ import reactor.core.publisher.Mono;
 
 public interface ServicePaymentRepository {
 
-    Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory);
+    Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory, String token);
 
-    Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId);
+    Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId, String token);
 
-    Flux<ServicePayment> servicePaymentList(String channel);
+    Flux<ServicePayment> servicePaymentList(String channel, String token);
 
 }

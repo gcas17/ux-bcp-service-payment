@@ -38,9 +38,10 @@ public class ServicePaymentFavoriteRepositoryImpl implements ServicePaymentFavor
     }
 
     @Override
-    public Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId) {
+    public Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId, String token) {
         String queryParam = Optional.ofNullable(clientId).map(id -> "?clientId=" + String.valueOf(id)).orElse("");
         return this.client.get().uri("/"+queryParam).accept(MediaType.APPLICATION_JSON)
+            .header("Authorization", token)
             .retrieve()
             .onStatus(HttpStatus::is5xxServerError, response -> Mono.error(new ServicePaymentBaseException("Server error")))
             .bodyToFlux(ServicePaymentFavorite.class)
@@ -53,33 +54,35 @@ public class ServicePaymentFavoriteRepositoryImpl implements ServicePaymentFavor
     }
 
     @Override
-    public Mono<Void> servicePaymentFavoriteDelete(String id) {
+    public Mono<Void> servicePaymentFavoriteDelete(String id, String token) {
         return this.client.delete().uri(uriBuilder -> uriBuilder.path("/{id}").build(id)).accept(MediaType.APPLICATION_JSON)
-                .retrieve()
-                .onStatus(HttpStatus::is5xxServerError, response-> Mono.error(new ServicePaymentBaseException("Server error")))
-                .bodyToMono(Void.class)
-                .retryWhen(
-                        Retry.fixedDelay(3, Duration.ofSeconds(2))
-                                .doBeforeRetry(x->  log.info("LOG BEFORE RETRY=" + x))
-                                .doAfterRetry(x->  log.info("LOG AFTER RETRY=" + x))
-                )
-                .doOnError(x-> log.info("LOG ERROR"))
-                .doOnSuccess(x-> log.info("LOG SUCCESS"));
+            .header("Authorization", token)
+            .retrieve()
+            .onStatus(HttpStatus::is5xxServerError, response-> Mono.error(new ServicePaymentBaseException("Server error")))
+            .bodyToMono(Void.class)
+            .retryWhen(
+                    Retry.fixedDelay(3, Duration.ofSeconds(2))
+                            .doBeforeRetry(x->  log.info("LOG BEFORE RETRY=" + x))
+                            .doAfterRetry(x->  log.info("LOG AFTER RETRY=" + x))
+            )
+            .doOnError(x-> log.info("LOG ERROR"))
+            .doOnSuccess(x-> log.info("LOG SUCCESS"));
     }
 
     @Override
-    public Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite) {
+    public Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite, String token) {
         return this.client.post().uri("/").accept(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(servicePaymentFavorite))
-                .retrieve()
-                .onStatus(HttpStatus::is5xxServerError, response-> Mono.error(new ServicePaymentBaseException("Server error")))
-                .bodyToMono(ServicePaymentFavorite.class)
-                .retryWhen(
-                        Retry.fixedDelay(3, Duration.ofSeconds(2))
-                                .doBeforeRetry(x->  log.info("LOG BEFORE RETRY=" + x))
-                                .doAfterRetry(x->  log.info("LOG AFTER RETRY=" + x))
-                )
-                .doOnError(x-> log.info("LOG ERROR"))
-                .doOnSuccess(x-> log.info("LOG SUCCESS"));
+            .header("Authorization", token)
+            .body(BodyInserters.fromValue(servicePaymentFavorite))
+            .retrieve()
+            .onStatus(HttpStatus::is5xxServerError, response-> Mono.error(new ServicePaymentBaseException("Server error")))
+            .bodyToMono(ServicePaymentFavorite.class)
+            .retryWhen(
+                    Retry.fixedDelay(3, Duration.ofSeconds(2))
+                            .doBeforeRetry(x->  log.info("LOG BEFORE RETRY=" + x))
+                            .doAfterRetry(x->  log.info("LOG AFTER RETRY=" + x))
+            )
+            .doOnError(x-> log.info("LOG ERROR"))
+            .doOnSuccess(x-> log.info("LOG SUCCESS"));
     }
 }

@@ -23,33 +23,33 @@ public class ServicePaymentServiceImpl implements ServicePaymentService {
     private ServicePaymentFavoriteRepository servicePaymentFavoriteRepository;
 
     @Override
-    public Flux<ServicePayment> servicePaymentFindAll(String channel) {
-        return this.servicePaymentRepository.servicePaymentList(channel);
+    public Flux<ServicePayment> servicePaymentFindAll(String channel, String token) {
+        return this.servicePaymentRepository.servicePaymentList(channel, token);
     }
 
     @Override
-    public Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId) {
-        return this.servicePaymentRepository.servicePaymentHistoryFindByClientId(clientId);
+    public Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId, String token) {
+        return this.servicePaymentRepository.servicePaymentHistoryFindByClientId(clientId, token);
     }
 
     @Override
-    public Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory) {
-        return this.servicePaymentRepository.servicePaymentHistorySave(servicePaymentHistory);
+    public Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory, String token) {
+        return this.servicePaymentRepository.servicePaymentHistorySave(servicePaymentHistory, token);
     }
 
     @Override
-    public Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId) {
-        return this.servicePaymentFavoriteRepository.servicePaymentFavoriteFindByClientId(clientId);
+    public Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId, String token) {
+        return this.servicePaymentFavoriteRepository.servicePaymentFavoriteFindByClientId(clientId, token);
     }
 
     @Override
-    public Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite) {
-        return this.servicePaymentFavoriteRepository.servicePaymentFavoriteSave(servicePaymentFavorite);
+    public Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite, String token) {
+        return this.servicePaymentFavoriteRepository.servicePaymentFavoriteSave(servicePaymentFavorite, token);
     }
 
     @Override
-    public Mono<Void> servicePaymentFavoriteDelete(String id) {
-        return this.servicePaymentFavoriteRepository.servicePaymentFavoriteDelete(id);
+    public Mono<Void> servicePaymentFavoriteDelete(String id, String token) {
+        return this.servicePaymentFavoriteRepository.servicePaymentFavoriteDelete(id, token);
     }
 
 }

@@ -8,16 +8,16 @@ import reactor.core.publisher.Mono;
 
 public interface ServicePaymentService {
 
-    Flux<ServicePayment> servicePaymentFindAll(String channel);
+    Flux<ServicePayment> servicePaymentFindAll(String channel, String token);
 
-    Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId);
+    Flux<ServicePaymentHistory> servicePaymentHistoryFindByClientId(Integer clientId, String token);
 
-    Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory);
+    Mono<ServicePaymentHistory> servicePaymentHistorySave(ServicePaymentHistory servicePaymentHistory, String token);
 
-    Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId);
+    Flux<ServicePaymentFavorite> servicePaymentFavoriteFindByClientId(Integer clientId, String token);
 
-    Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite);
+    Mono<ServicePaymentFavorite> servicePaymentFavoriteSave(ServicePaymentFavorite servicePaymentFavorite, String token);
 
-    Mono<Void> servicePaymentFavoriteDelete(String id);
+    Mono<Void> servicePaymentFavoriteDelete(String id, String token);
 
 }
